@@ -2,7 +2,7 @@
 
 This resp is for processing data from CHNS (China Health and Nutrition Survey). 
 
-## How the code works
+## How it works
 ### Preparing and cleaning the data
 #### Baseline charicteristics preparing
 #### X: plant-based diet score
@@ -12,7 +12,7 @@ This resp is for processing data from CHNS (China Health and Nutrition Survey).
 
 ## What has been finished
 
-- 20200929 
+- CHNS.0929.R
 
 Date of birth, gender, education and total energy are accessed.
 
