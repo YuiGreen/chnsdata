@@ -12,6 +12,17 @@ This resp is for processing data from CHNS (China Health and Nutrition Survey).
 
 ## What has been finished
 
+- CHNS.0930.R
+
+Date of birth, gender, education, smoking, alcohol intake, BMI and total energy are accessed.
+
+Other covariates needed: physical activity.
+
+Diagnosis of diabetes is accessed.
+
+Food intake data is found but needs further process.
+
+
 - CHNS.0929.R
 
 Date of birth, gender, education and total energy are accessed.
