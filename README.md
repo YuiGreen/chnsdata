@@ -11,6 +11,8 @@ This resp is for processing data from CHNS (China Health and Nutrition Survey).
 ### Predicting the disease burden change because of higher plant-based diet score
 
 ## What has been finished
+- CHNS.1001.R
+Minor adjustment.
 
 - CHNS.0930.R
 
