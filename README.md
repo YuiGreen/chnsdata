@@ -3,16 +3,25 @@
 This resp is for processing data from CHNS (China Health and Nutrition Survey). 
 
 ## How it works
+
 ### Preparing and cleaning the data
+
 #### Baseline charicteristics preparing
+
 Diet.R: Food data preprocessing and Plant-based Diet Scores computing
+
 CHNS.R: Main program, including covariate preprocessing
+
 #### X: plant-based diet score
+
 #### Y: Type II diabetes
+
 ### Applying cox model to estimate the HR (Hazard Ratio)
+
 ### Predicting the disease burden change because of higher plant-based diet score
 
 ## What has been finished
+
 - 1009
 
 Diet.1009.R: Foodgroup dictionary of FCT1991 is constructed.
