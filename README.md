@@ -22,6 +22,11 @@ CHNS.R: Main program, including covariate preprocessing
 
 ## What has been finished
 
+- 1010
+
+Diet.1009.R: Foodgroup dictionary of FCT2002 is constructed.
+
+
 - 1009
 
 Diet.1009.R: Foodgroup dictionary of FCT1991 is constructed.
