@@ -1,6 +1,7 @@
 setwd("D:/CHNS")
 library(haven)
 library(dplyr)
+library(readr)
 
 
 ## Loading Food Intake Data
@@ -22,7 +23,7 @@ bean_91 <- cbind(c(2001:2078, 3001:3020), 'bean')
 garlic_91 <- cbind(c(5018:5020), 'garlic')
 nut_91 <- cbind(c(11001:11030), 'nut')
 tea_91 <- cbind(c(22006:22015), 'tea')
-ref_grain_91 <- cbind(setdiff(grain_91, whole_grain_91), 'ref_grain')
+ref_grain_91 <- cbind(setdiff(grain_91[,1], whole_grain_91[,1]), 'ref_grain')
 sugar_91 <- cbind(c(24001:24022), 'sugar')
 salt_pre <- cbind(c(8001:8035), 'salt_pre')
 animal_fat_91 <- cbind(c(20011, 20012, 20014, 20015, 20016, 20019, 20020, 14001), 'ani_fat')
@@ -41,22 +42,19 @@ foodcode_1991 <- data.frame(foodcode_1991)
 food_intake_fct91 <- filter(food_intake, WAVE<2004)
 food_intake_fct91 <- left_join(food_intake_fct91, foodcode_1991, by = 'foodcode')
 food_intake_fct91_sum <- food_intake_fct91  %>%
-  group_by(IDind, WAVE, foodgroup) %>%
+  group_by(IDind, WAVE, foodgroup, day, mealtime) %>%
+  ### the parament in group_by can be replaced to observe by mealtime/day/3days
   summarise(n = n())
 
-
-
-## Defining food groups in FCT02
-
-
-## Constructing foodcode dictionary of FCT2002
-
+## Foodcode dictionary of FCT2002 was constructed in MS Excel named `foodcode_2002.csv`
 
 ## Group by foodgroup in FCT02
+foodcode_2002 <- read_csv("foodcode_2002.csv", col_types = cols(foodcode = col_character()))
 food_intake_fct02 <- filter(food_intake, WAVE>=2004)
 food_intake_fct02 <- left_join(food_intake_fct02, foodcode_2002, by = 'foodcode')
 food_intake_fct02_sum <- food_intake_fct02  %>%
-  group_by(IDind, WAVE, foodgroup) %>%
+  group_by(IDind, WAVE, foodgroup, day, mealtime) %>%
+  ### the parament in group_by can be replaced to observe by mealtime/day/3days
   summarise(n = n())
   
-## Group by foodgroup and split the data by FCT system version
+## Calculating Plant-based Diet Index
