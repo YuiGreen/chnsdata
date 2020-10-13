@@ -4,6 +4,8 @@ library(haven)
 library(dplyr)
 library(tidyr)
 library(readr)
+library(reshape2)
+library(ggplot2)
 
 
 ## Load Food Intake Data
@@ -12,6 +14,7 @@ nutr3_00$IDind <- as.character(nutr3_00$IDind)
 food_intake <- data.frame(cbind(nutr3_00$IDind, nutr3_00$WAVE, nutr3_00$T7_DF, nutr3_00$V40, nutr3_00$V39, nutr3_00$FOODCODE))
 colnames(food_intake) <- c('IDind', 'WAVE', 'day', 'mealtime', 'intake', 'foodcode')
 food_intake <- filter(food_intake,WAVE>=1997)
+
 
 ## Construct foodcode dictionary of FCT1991 named `foodcode_1991.csv`
 # construct_fc91 <- function(){
@@ -43,6 +46,7 @@ food_intake <- filter(food_intake,WAVE>=1997)
 
 ## Foodcode dictionary of FCT2002 was constructed in MS Excel named `foodcode_2002.csv`
 
+
 ## Load foodcode dictionaries
 foodcode_1991 <- read_csv("foodcode_1991.csv", col_types = cols(foodcode = col_character()))
 foodcode_2002 <- read_csv("foodcode_2002.csv", col_types = cols(foodcode = col_character()))
@@ -54,7 +58,7 @@ sum_intake <- function(intake_data, code_dict){
   intake_data$intake  <- as.numeric(intake_data$intake)
   intake_sum <- na.omit(intake_data)  %>%
     group_by(IDind, WAVE, foodgroup) %>%
-    summarise(n = n(), intake=sum(intake))
+    summarise(intake=sum(intake))
 }
 food_intake_fct91 <- filter(food_intake, WAVE<2004)
 food_intake_fct02 <- filter(food_intake, WAVE>=2004)
@@ -62,6 +66,9 @@ food_intake_fct91_sum <- sum_intake(food_intake_fct91, foodcode_1991)
 food_intake_fct91_sum$intake <- food_intake_fct91_sum$intake*50 # Converting the unit to gram
 food_intake_fct02_sum <- sum_intake(food_intake_fct02, foodcode_2002)
 food_intake_sum <- rbind(food_intake_fct91_sum, food_intake_fct02_sum)
+food_intake_sum <- spread(food_intake_sum, foodgroup, intake)
+food_intake_sum[is.na(food_intake_sum)] <- 0
+food_intake_sum <- melt(food_intake_sum, id.vars=c("IDind","WAVE"), variable.name="foodgroup", value.name="intake")
 foodgroup <- factor(food_intake_sum$foodgroup)
 
 ## Calculate quintiles of each food group and join them to intake_sum
@@ -72,26 +79,29 @@ quintiles$foodgroup <- c('animal_fat', 'dairy', 'egg', 'fish_sea', 'fresh_fruit'
                          'tea', 'vegetable', 'vegetable_oil', 'whole_grain')
 food_intake_quin <- left_join(food_intake_sum, quintiles, by = "foodgroup")
 
+
 ## Calculating Plant-based Diet Indices
 # healthy_plant <- c('tea', 'vegetable', 'vegetable_oil', 'whole_grain', 'nut', 'legume', 'fresh_fruit')
 # unhealthy_plant <- c('potato', 'preserved', 'ref_grain', 'ssb', 'sweet')
 # animal <- c('animal_fat', 'dairy', 'egg', 'fish_sea', 'meat')
-food_intake_quin$score <- 0
-food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X2), 'score'] <- 1
-food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X3), 'score'] <- 2
-food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X4), 'score'] <- 3
-food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X5), 'score'] <- 4
-food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X6), 'score'] <- 5
+food_intake_quin$score <- 1
+food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X2), 'score'] <- 2
+food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X3), 'score'] <- 3
+food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X4), 'score'] <- 4
+food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X5), 'score'] <- 5
 food_intake_quin_short <- food_intake_quin[,c('IDind','WAVE','foodgroup', 'score')]
 
 food_intake_spread <- spread(food_intake_quin_short, foodgroup, score)
-food_intake_spread[is.na(food_intake_spread)] <- 0
 food_intake_spread$heal_plant <- food_intake_spread$tea + food_intake_spread$vegetable + food_intake_spread$vegetable_oil + food_intake_spread$whole_grain + food_intake_spread$nut + food_intake_spread$legume + food_intake_spread$fresh_fruit
 food_intake_spread$unheal_plant <- food_intake_spread$potato + food_intake_spread$preserved + food_intake_spread$ref_grain + food_intake_spread$ssb + food_intake_spread$sweet
 food_intake_spread$animal <- food_intake_spread$animal_fat + food_intake_spread$dairy + food_intake_spread$egg + food_intake_spread$fish_sea + food_intake_spread$meat
-food_intake_spread$PDI <- food_intake_spread$healthy_plant+food_intake_spread$unhealthy_plant-food_intake_spread$animal
-food_intake_spread$hPDI <- food_intake_spread$healthy_plant-food_intake_spread$unhealthy_plant-food_intake_spread$animal
-food_intake_spread$uPDI <- -food_intake_spread$healthy_plant+food_intake_spread$unhealthy_plant-food_intake_spread$animal
+food_intake_spread$PDI <- food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal
+food_intake_spread$hPDI <- food_intake_spread$heal_plant-food_intake_spread$unheal_plant-food_intake_spread$animal
+food_intake_spread$uPDI <- -food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal
 
 PDIs <- food_intake_spread[, c('IDind', 'WAVE', 'PDI', 'hPDI', 'uPDI')]
 summary(PDIs)
+ggplot(PDIs, aes(x=factor(WAVE))) + geom_boxplot(aes(y=PDI))
+# PDI <- dcast(PDIs[, c('IDind', 'WAVE', 'PDI')], IDind ~ WAVE)
+# hPDI <- dcast(PDIs[, c('IDind', 'WAVE', 'hPDI')], IDind ~ WAVE)
+# uPDI <- dcast(PDIs[, c('IDind', 'WAVE', 'uPDI')], IDind ~ WAVE)
