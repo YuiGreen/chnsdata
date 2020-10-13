@@ -95,9 +95,9 @@ food_intake_spread <- spread(food_intake_quin_short, foodgroup, score)
 food_intake_spread$heal_plant <- food_intake_spread$tea + food_intake_spread$vegetable + food_intake_spread$vegetable_oil + food_intake_spread$whole_grain + food_intake_spread$nut + food_intake_spread$legume + food_intake_spread$fresh_fruit
 food_intake_spread$unheal_plant <- food_intake_spread$potato + food_intake_spread$preserved + food_intake_spread$ref_grain + food_intake_spread$ssb + food_intake_spread$sweet
 food_intake_spread$animal <- food_intake_spread$animal_fat + food_intake_spread$dairy + food_intake_spread$egg + food_intake_spread$fish_sea + food_intake_spread$meat
-food_intake_spread$PDI <- food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal
-food_intake_spread$hPDI <- food_intake_spread$heal_plant-food_intake_spread$unheal_plant-food_intake_spread$animal
-food_intake_spread$uPDI <- -food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal
+food_intake_spread$PDI <- food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal+30
+food_intake_spread$hPDI <- food_intake_spread$heal_plant-food_intake_spread$unheal_plant-food_intake_spread$animal+60
+food_intake_spread$uPDI <- -food_intake_spread$heal_plant+food_intake_spread$unheal_plant-food_intake_spread$animal+72
 
 PDIs <- food_intake_spread[, c('IDind', 'WAVE', 'PDI', 'hPDI', 'uPDI')]
 summary(PDIs)
