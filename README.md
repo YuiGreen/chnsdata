@@ -8,9 +8,9 @@ This resp is for processing data from CHNS (China Health and Nutrition Survey).
 
 #### Baseline charicteristics preparing
 
-Diet.R: Food data preprocessing and Plant-based Diet Scores computing
+Diet.mmdd.R: Food data preprocessing and Plant-based Diet Scores computing
 
-CHNS.R: Main program, including covariate preprocessing
+CHNS.mmdd.R: Main program, including covariate preprocessing
 
 #### X: plant-based diet score
 
