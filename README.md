@@ -6,21 +6,22 @@ This resp is for processing data from CHNS (China Health and Nutrition Survey).
 
 ### Preparing and cleaning the data
 
-#### Baseline charicteristics preparing
-
-Diet.mmdd.R: Food data preprocessing and Plant-based Diet Scores computing
+#### Main
 
 CHNS.mmdd.R: Main program, including covariate preprocessing
 
 #### X: plant-based diet score
 
+Diet.mmdd.R: Food data preprocessing and Plant-based Diet Scores computing
+
 #### Y: Type II diabetes
 
-### Applying cox model to estimate the HR (Hazard Ratio)
+### Applying cox model with time-varying risk factors to estimate the HR (Hazard Ratio)
 
 ### Predicting the disease burden change because of higher plant-based diet score
 
 ## What has been finished
+
 - 1013
 
 Diet.1013.R: PDI, hPDI, uPDI were calculated.
