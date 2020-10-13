@@ -18,7 +18,7 @@ Diet.mmdd.R: Food data preprocessing and Plant-based Diet Scores computing
 
 ### Applying cox model with time-varying risk factors to estimate the HR (Hazard Ratio)
 
-### Predicting the disease burden change because of higher plant-based diet score
+### Predicting the disease burden change coming with higher plant-based diet score
 
 ## What has been finished
 
