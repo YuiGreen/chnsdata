@@ -21,6 +21,10 @@ CHNS.R: Main program, including covariate preprocessing
 ### Predicting the disease burden change because of higher plant-based diet score
 
 ## What has been finished
+- 1013
+
+Diet.1013.R: PDI, hPDI, uPDI were calculated.
+
 - 1011
 
 Diet.1011.R: Foodgroup dictionary is updated by grouping foods into 17 categories. 
