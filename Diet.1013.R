@@ -84,7 +84,7 @@ food_intake_quin <- left_join(food_intake_sum, quintiles, by = "foodgroup")
 # healthy_plant <- c('tea', 'vegetable', 'vegetable_oil', 'whole_grain', 'nut', 'legume', 'fresh_fruit')
 # unhealthy_plant <- c('potato', 'preserved', 'ref_grain', 'ssb', 'sweet')
 # animal <- c('animal_fat', 'dairy', 'egg', 'fish_sea', 'meat')
-food_intake_quin$score <- 1
+food_intake_quin$quin <- 1
 food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X2), 'score'] <- 2
 food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X3), 'score'] <- 3
 food_intake_quin[which(food_intake_quin$intake>food_intake_quin$X4), 'score'] <- 4
@@ -101,7 +101,8 @@ food_intake_spread$uPDI <- -food_intake_spread$heal_plant+food_intake_spread$unh
 
 PDIs <- food_intake_spread[, c('IDind', 'WAVE', 'PDI', 'hPDI', 'uPDI')]
 summary(PDIs)
-ggplot(PDIs, aes(x=factor(WAVE))) + geom_boxplot(aes(y=PDI))
+PDIs_melt <- melt(PDIs, id.vars=c("IDind","WAVE"), variable.name="index_name", value.name="index")
+ggplot(PDIs_melt, aes(x=index_name, fill = WAVE)) + geom_boxplot(aes(y=index)) # A glance of the trend
 # PDI <- dcast(PDIs[, c('IDind', 'WAVE', 'PDI')], IDind ~ WAVE)
 # hPDI <- dcast(PDIs[, c('IDind', 'WAVE', 'hPDI')], IDind ~ WAVE)
 # uPDI <- dcast(PDIs[, c('IDind', 'WAVE', 'uPDI')], IDind ~ WAVE)
