@@ -22,6 +22,10 @@ Diet.mmdd.R: Food data preprocessing and Plant-based Diet Scores computing
 
 ## What has been finished
 
+- 1019
+
+CHNS.1019.R: Data is cleaned by eliminating extreme values.
+
 - 1013
 
 Diet.1013.R: PDI, hPDI, uPDI were calculated.
