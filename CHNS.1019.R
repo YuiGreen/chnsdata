@@ -4,9 +4,10 @@ library(dplyr)
 library(ggplot2)
 library(survival)
 library(survminer)
-library(dplyr)
 
-# Baseline Characteristic
+#****************************Data Accessing and Prepossessing****************************
+
+# Covariates
 
 ## DoB and gender
 surveys_pub_12 <- read_sas("Master_ID_201908/surveys_pub_12.sas7bdat")
@@ -20,11 +21,13 @@ base <- na.omit(survey)
 educ_12 <- read_sas("Master_Educ_201804/educ_12.sas7bdat")
 education <- educ_12[,c('IDind', "WAVE", "A12")]
 colnames(education) <- c('IDind', 'WAVE', 'hiedu')
+education <- education[which(education$hiedu<=6),]
 base <- left_join(base, education, by = c('Idind'='IDind','wave'='WAVE'))
 
 ## Total Energy
 macronutrients <- read_sas("Master_Macronutrients_201410/c12diet.sas7bdat")
 macnut <- macronutrients[,c('IDind', 'wave', 'd3kcal')]
+macnut <- macnut[which(macnut$d3kcal<9999),]
 base <- left_join(base, macnut, by = c('Idind'='IDind','wave'='wave'))
 
 ## Household Income Per Capita
@@ -37,46 +40,25 @@ base <- left_join(base, hhinc, by = c('hhid'='IDhh', 'wave'='WAVE'))
 pexam_pub_12 <- read_sas("Master_PE_PA_201908/pexam_pub_12.sas7bdat")
 pexam_pub_12$U56[is.na(pexam_pub_12$U56)]<-9
 htwt <- subset(pexam_pub_12,U56!="1",select=c(IDind,WAVE,HEIGHT,WEIGHT))
+htwt <- htwt[which(htwt$HEIGHT>0),]
+htwt <- htwt[which(htwt$WEIGHT>0),]
 htwt$BMI <- htwt$WEIGHT/((htwt$HEIGHT*0.01)*(htwt$HEIGHT*0.01))
 base <- left_join(base, htwt, by = c('Idind'='IDind','wave'='WAVE'))
 
 ## Smoking and alcohol
 smokenalcohol <- subset(pexam_pub_12,select=c(IDind,WAVE,U25,U40))
 colnames(smokenalcohol) <- c('IDind', 'WAVE', 'smoked', 'drank')
+smokenalcohol <- smokenalcohol[which(smokenalcohol$smoked<=1),]
+smokenalcohol <- smokenalcohol[which(smokenalcohol$drank<=1),]
 base <- left_join(base, smokenalcohol, by = c('Idind'='IDind','wave'='WAVE'))
 
 ## Physical Activity
 
 
-## A summary on the base dataset
-summary(base)
-base <- filter(base, wave>=1997)
+## Plant-based Diet Indices - `PDIs_melt` from Diet.R
+base <- left_join(base, PDIs_melt, by = c('Idind'='IDind','wave'='WAVE'))
 
-# Data Cleaning
-
-
-
-# Food Intake
-
-## Loading Food Intake Data
-nutr3_00 <- read_sas("Master_Nutrition_201410/nutr3_00.sas7bdat")
-head(nutr3_00)
-nutr3_00$IDind <- as.character(nutr3_00$IDind)
-head(nutr3_00)
-food_intake <- data.frame(cbind(nutr3_00$IDind, nutr3_00$WAVE, nutr3_00$V39, nutr3_00$FOODCODE))
-colnames(food_intake) <- c('IDind', 'WAVE', 'intake', 'foodcode')
-food_intake <- filter(food_intake,WAVE>=1997)
-
-## Conversion from `foodcode` to `foodgroup`
-## Note: 2 coding systems are used after 1997
-
-
-
-## Calculating Plant-based Diet Score (`PBDS`)
-
-
-
-# Diabetes Diagnosis
+# Diabetes
 
 ## Loading Diabetes data
 diabetes <- subset(pexam_pub_12,select=c(IDind, WAVE, U24A, U24B))
@@ -90,3 +72,11 @@ diabetes <- left_join(diabetes, base[,c('Idind', 'wave', 'WEST_DOB_Y')], by=c('I
 diabetes$Year_dia <- diabetes$age_dia + diabetes$WEST_DOB_Y
 summary(diabetes)
 
+## Summary of the dataset and objects selection // needs revision
+summary(base)
+complete_data <- base[which(base$wave>=1997),]
+baseline <- base[which(base$wave==1997),]
+
+#****************************Data Analysis and Visualization****************************
+
+# Baseline Charicteristics
