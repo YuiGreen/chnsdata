@@ -53,7 +53,19 @@ smokenalcohol <- smokenalcohol[which(smokenalcohol$drank<=1),]
 base <- left_join(base, smokenalcohol, by = c('Idind'='IDind','wave'='WAVE'))
 
 ## Physical Activity
-
+pact_12 <- read_sas("Master_PE_PA_201908/pact_12.sas7bdat")
+pa1<-pact_12[,c('IDind', "WAVE", "U140","U140_MN","U141","U141_MN","U142","U142_MN","U128","U129_MN","U126A","U126B","U127A_MN","U127B_MN","U124","U125_MN","U325","U326_MN",
+                "U145","U146_MN","U149","U329_MN","U330_MN","U147","U331_MN","U332_MN","U151","U333_MN","U334_MN","U153",
+                "U335_MN","U336_MN","U155","U337_MN","U338_MN")]
+timea_12 <- read_sas("Master_TimeUse_201804/timea_12.sas7bdat")
+pa2<-timea_12[,c('IDind', "WAVE", "K2","K3","K4","K5","K6","K7","K7B","K7C")]
+pa<-merge(pa1, pa2,by=c('Idind'='IDind','wave'='WAVE'))
+pa$Mets<-NA
+pa[is.na(pa)]<-0
+attach(pa)
+pa$Mets<-(U140_MN*2+U141_MN*4+U142_MN*6+U129_MN*3+U127A_MN*4+U127B_MN*4+U125_MN*1.5+U326_MN*1.5+U146_MN*4.5
++U329_MN*5+U330_MN*5+U331_MN*7.5+U332_MN*7.5+U333_MN*6+U334_MN*6+U335_MN*5+U336_MN*5+U337_MN*5+U338_MN*5
++2.3*K3+2.25*K5+2.15*K7+3*K7C)/60
 
 ## Plant-based Diet Indices - `PDIs_melt` from Diet.R
 base <- left_join(base, PDIs_melt, by = c('Idind'='IDind','wave'='WAVE'))
